@@ -22,13 +22,26 @@ export interface ChainClick {
 
 let abilityWait = 800000 ;
 
+export class Macro {
+    protected mb : MacroBuilder;
+    public Build() : MacroBuilder {
+        this.mb = new MacroBuilder;
+        return this.mb;
+    }
+}
+
 export class MacroBuilder {
 
-    private _macroElements : Array<MacroElement>;
+    protected _macroElements : Array<MacroElement>;
     private _nextTime : number;
 
-    public constructor() {
+    protected Clear() {
         this._macroElements = new Array<MacroElement>();
+        this.SetTime(0);
+    }
+
+    public constructor() {
+        this.Clear();
     }
 
     public get macroElements() : Array<MacroElement> {
@@ -53,7 +66,18 @@ export class MacroBuilder {
     public AddClick(position : Point, waitAfter : number=0) : MacroBuilder {
         let elem = new ClickElement(this._nextTime, position);
         this._nextTime = this.Add(elem);
-        this.Wait(waitAfter);
+        this.WaitMicroseconds(waitAfter);
+        return this;
+    }
+
+    public AddMacro(macro : Macro) : MacroBuilder {
+        let mb = macro.Build();
+        for(let elem of mb.macroElements) {
+            let temp = elem;
+            temp.time += this._nextTime;
+            this.Add(temp);
+        }
+        this._nextTime += mb.GetTime();
         return this;
     }
 
@@ -99,14 +123,14 @@ export class MacroBuilder {
             }
             scrollPosition = newScrollPosition;
             this.AddClick(this.GetAbilityPosition(abilityLoc.row, abilityLoc.column));
-            this.Wait(abilityWait);
+            this.WaitMicroseconds(abilityWait);
             if(abilityLoc.target != Pos.no_player)
             {
                 this.AddClick(abilityLoc.target);                
-                this.Wait(abilityWait);
+                this.WaitMicroseconds(abilityWait);
             }
         }
-        this.Wait(abilityWait);
+        this.WaitMicroseconds(abilityWait);
         return this;
     }
   
@@ -119,10 +143,18 @@ export class MacroBuilder {
         return retString;       
     }
 
-    public Wait(time : number) : MacroBuilder {
-        this._nextTime = this._nextTime + time;
+    public WaitSeconds(time : number) : MacroBuilder {
+        this._nextTime = this._nextTime + (time * 1000 * 1000);
         return this;
     }
+    public WaitMilliseconds(time : number) : MacroBuilder {
+        this._nextTime = this._nextTime + (time * 1000);
+        return this;
+    }
+    public WaitMicroseconds(time : number) : MacroBuilder {
+        this._nextTime = this._nextTime + time;
+        return this;
+    }        
     public End() : MacroBuilder {
         this.Add(new EndElement(this._nextTime));
         return this;

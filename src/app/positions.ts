@@ -31,7 +31,7 @@ export let ability_3_2 = item_3_2;
 export let b_depart = { x: 1152, y:358 };
 export let b_next = b_depart;
 
-export let quest_1 = { x: 432, y:686 };
-export let quest_2 = { x: 627, y:686 };
-export let quest_3 = { x: 819, y:686 };
-export let quest_4 = { x: 1002, y:686 };
+export let quest_1 = { x: 432, y:680 };
+export let quest_2 = { x: 627, y:680 };
+export let quest_3 = { x: 819, y:680 };
+export let quest_4 = { x: 1002, y:680 };

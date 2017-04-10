@@ -1,11 +1,11 @@
 import * as Pos from './positions';
-import { MacroBuilder, Column } from './macro-builder';
+import { MacroBuilder, Macro, Column } from './macro-builder';
 
-export class Test {
+export class Test extends Macro {
     public Build() : MacroBuilder {
-        let mb = new MacroBuilder();
-        let nextTime = 1000000;
-        mb.SetTime(nextTime);
+        super.Build();
+        let mb = this.mb;
+        mb.SetTime(1000000);
 
         // sample for:
         // Player 4 
@@ -40,42 +40,44 @@ export class Test {
     }
 }
 
-export class Egg {
+export class EggBasicTurn extends Macro {
     public Build() : MacroBuilder {
+        super.Build();
 
-        let mb = new MacroBuilder();
-  
-        let nextTime : number = 1000000;       
-        mb.SetTime(nextTime); 
-        mb.AddClick(Pos.quest_1, 2000000)
-          .AddClick(Pos.b_next, 2000000)
-          .AddClick(Pos.quest_3, 2000000)
+        this.mb.AddAbility(3, [{ row: 6, column: Column.Right, target: Pos.no_player }])        
+          .AddClick(Pos.player_3).WaitMilliseconds(200);
 
-        mb.AddClick(Pos.b_depart, 12000000)
+        this.mb.AddAbility(4, [{ row: 9, column: Column.Right, target: Pos.no_player }])        
+          .AddClick(Pos.player_4).WaitMilliseconds(200);
+
+        return this.mb;
+    }
+}
+
+export class Egg extends Macro {
+    public Build() : MacroBuilder {
+        super.Build();
+        let mb = this.mb;
+
+        mb.SetTime(1000000); 
+        mb.AddClick(Pos.quest_1).WaitSeconds(2)
+          .AddClick(Pos.b_next).WaitSeconds(2)
+          .AddClick(Pos.quest_3).WaitSeconds(2)
+          .AddClick(Pos.b_depart).WaitSeconds(12);
 
         //battle one: xon and xiao
-        mb.AddAbility(3, [{ row: 6, column: Column.Right, target: Pos.no_player }])        
-          .AddClick(Pos.player_3, 200000);
+        mb.AddMacro(new EggBasicTurn());
+        mb.WaitSeconds(10);
 
-        mb.AddAbility(4, [{ row: 9, column: Column.Right, target: Pos.no_player }])        
-          .AddClick(Pos.player_4, 200000);
-
-        mb.Wait(10000000);
-
-        // battle two: xon and xiao
-        mb.AddAbility(3, [{ row: 6, column: Column.Right, target: Pos.no_player }])        
-          .AddClick(Pos.player_3, 200000);
-
-        mb.AddAbility(4, [{ row: 9, column: Column.Right, target: Pos.no_player }])        
-          .AddClick(Pos.player_4, 200000);
-
-        mb.Wait(15000000);
+        //battle two: xon and xiao
+        mb.AddMacro(new EggBasicTurn());
+        mb.WaitSeconds(15);
 
         // battle 3: 
         mb.AddAbility(5, [{ row: 8, column: Column.Right, target: Pos.player_5 }]) 
-          .AddClick(Pos.player_5, 200000);
+          .AddClick(Pos.player_5).WaitMilliseconds(200);
         mb.AddAbility(3, [{ row: 6, column: Column.Right, target: Pos.no_player }])
-          .AddClick(Pos.player_3, 200000);
+          .AddClick(Pos.player_3).WaitMilliseconds(200);
 
         mb.AddAbility(1, [{ row: 7, column: Column.Left, target: Pos.no_player }]); 
         mb.AddAbility(2, [{ row: 6, column: Column.Left, target: Pos.no_player }]); 
@@ -84,16 +86,14 @@ export class Egg {
             { player: 2, time: 100000 },           
         ]);
 
-        mb.Wait(25000000)
-          .AddClick(Pos.b_next, 1000000)
-          .AddClick(Pos.b_next, 1000000)
-          .AddClick(Pos.b_next, 1000000)
-          .AddClick(Pos.b_next, 5000000)
-          .AddClick(Pos.b_next)
-          .Wait(5000000)
-          .End()
+        mb.WaitSeconds(25)
+          .AddClick(Pos.b_next).WaitSeconds(1)
+          .AddClick(Pos.b_next).WaitSeconds(1)
+          .AddClick(Pos.b_next).WaitSeconds(1)
+          .AddClick(Pos.b_next).WaitSeconds(5)
+          .AddClick(Pos.b_next).WaitSeconds(5)
+          .End();
 
         return mb;
-
     }
 }
