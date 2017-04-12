@@ -11,7 +11,7 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
 
-    let Macro = new Macros.Egg;
+    let Macro = new Macros.Test;
     this.title = Macro.Build().ToMemu();
   }
 }

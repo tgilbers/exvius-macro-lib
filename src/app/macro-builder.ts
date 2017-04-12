@@ -9,11 +9,18 @@ export enum Column {
     Left, Right
 }
 
-export interface abilityLocation {
+export interface AbilityLocation {
     row: number;
     column: Column;
     target: Point;
 }
+
+export interface ItemLocation {
+    row: number;
+    column: Column;
+    target: Point;
+}
+
 
 export interface ChainClick {
     player: number;
@@ -92,7 +99,7 @@ export class MacroBuilder {
         return this;
     }
 
-    public AddAbility(player: number, abilityLocations : Array<abilityLocation>) : MacroBuilder {
+    public AddAbility(player: number, abilityLocations : Array<AbilityLocation>) : MacroBuilder {
         if(abilityLocations.length == 0) {
             console.error("No abilities passed");
             return this;
@@ -133,7 +140,37 @@ export class MacroBuilder {
         this.WaitMicroseconds(abilityWait);
         return this;
     }
-  
+
+    public AddItem(player: number, itemLocation : ItemLocation) : MacroBuilder {
+
+        let playerPos = this.GetPlayerPosition(player);
+        if(playerPos == Pos.no_player) {
+            console.error("Invalid player passed");
+            return this;
+        }
+        this._nextTime = this.Add(new ItemMenuElement(this._nextTime, playerPos));
+
+        let newScrollPosition = Math.max(itemLocation.row - 3, 0);
+        if(newScrollPosition > 0)
+        {
+            for(let ii = 0; ii < (newScrollPosition); ii++)
+            {
+                this._nextTime = this.Add(new RowDown(this._nextTime));
+            }            
+        }
+
+        this.AddClick(this.GetAbilityPosition(itemLocation.row, itemLocation.column));
+        this.WaitMicroseconds(abilityWait);
+        if(itemLocation.target != Pos.no_player)
+        {
+            this.AddClick(itemLocation.target);                
+            this.WaitMicroseconds(abilityWait);
+        }
+
+        this.WaitMicroseconds(abilityWait);
+        return this;
+    }
+
     public ToMemu() : string {
         let retString : string = "";
         for (let elem of this.macroElements)
@@ -158,6 +195,10 @@ export class MacroBuilder {
     public End() : MacroBuilder {
         this.Add(new EndElement(this._nextTime));
         return this;
+    }
+
+    private GetItemPosition(row: number, column: Column) : Point {
+        return this.GetAbilityPosition(row, column);
     }
 
     private GetAbilityPosition(row: number, column: Column) : Point {

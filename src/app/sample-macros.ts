@@ -5,6 +5,76 @@ export class Test extends Macro {
     public Build() : MacroBuilder {
         super.Build();
         let mb = this.mb;
+
+        this.mb.SetTime(1000000)
+        .AddItem(2, { row: 1, column: Column.Left, target: Pos.player_1 })        
+        .AddItem(3, { row: 1, column: Column.Right, target: Pos.player_1 })        
+        .AddItem(4, { row: 3, column: Column.Left, target: Pos.player_1 })        
+        .AddItem(6, { row: 4, column: Column.Right, target: Pos.player_1 })  
+        .AddItem(2, { row: 1, column: Column.Left, target: Pos.player_1 })        
+        .AddItem(3, { row: 1, column: Column.Right, target: Pos.player_1 })        
+        .AddItem(4, { row: 3, column: Column.Left, target: Pos.player_1 })        
+        .AddItem(6, { row: 4, column: Column.Right, target: Pos.player_1 })  
+        .End();
+
+        return mb;
+    }
+}
+
+export class Items extends Macro {
+    public Build() : MacroBuilder {
+        super.Build();
+        let mb = this.mb;
+
+        mb.SetTime(1000000); 
+        mb.AddClick(Pos.quest_3).WaitSeconds(2)
+          .AddClick(Pos.b_next).WaitSeconds(2)
+          .AddClick(Pos.quest_4).WaitSeconds(2)
+          .AddClick(Pos.b_depart).WaitSeconds(12);
+
+        //battle one: xon and xiao
+        mb.AddMacro(new ItemTurn());
+        mb.WaitSeconds(15);
+
+        //battle two: xon and xiao
+        mb.AddMacro(new ItemTurn());
+
+        mb.WaitSeconds(25)
+          .AddClick(Pos.b_next).WaitSeconds(1)
+          .AddClick(Pos.b_next).WaitSeconds(1)
+          .AddClick(Pos.b_next).WaitSeconds(1)
+          .AddClick(Pos.b_next).WaitSeconds(5)
+          .AddClick(Pos.b_next).WaitSeconds(5)
+          .End();
+
+        return mb;
+    }
+}
+
+export class ItemTurn extends Macro {
+    public Build() : MacroBuilder {
+      super.Build();
+
+      this.mb.AddItem(2, { row: 1, column: Column.Left, target: Pos.player_1 })        
+        .AddItem(3, { row: 1, column: Column.Left, target: Pos.player_1 })        
+        .AddItem(4, { row: 1, column: Column.Left, target: Pos.player_1 })        
+        .AddItem(5, { row: 1, column: Column.Left, target: Pos.player_1 })        
+        .AddItem(6, { row: 1, column: Column.Left, target: Pos.player_1 })        
+        .AddClick(Pos.player_2).WaitMilliseconds(200)
+        .AddClick(Pos.player_3).WaitMilliseconds(200)
+        .AddClick(Pos.player_4).WaitMilliseconds(200)
+        .AddClick(Pos.player_5).WaitMilliseconds(200)
+        .AddClick(Pos.player_6).WaitMilliseconds(200)
+        .AddClick(Pos.player_1)
+
+      return this.mb;
+    }
+}
+
+export class Arena extends Macro {
+    public Build() : MacroBuilder {
+        super.Build();
+        let mb = this.mb;
         mb.SetTime(1000000);
 
         // sample for:
